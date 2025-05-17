@@ -7,6 +7,6 @@
 ? 是否需要编译为 ES5 ？ Yes                               
 ? 请选择 CSS 预处理器（Sass/Less/Stylus） 无
 ? 请选择包管理工具 npm           
-? 请选择编译工具 Vite          
+? 请选择编译工具 Webpack5          
 ? 请选择模板源 Github（最新）       
 ? 请选择模板 taro-ui（使用 taro-ui 的模板）  
