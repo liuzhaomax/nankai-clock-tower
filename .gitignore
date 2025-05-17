@@ -2,6 +2,7 @@
 .vscode
 
 sever/go.sum
+client/nct/node_modules
 
 # Binaries for programs and plugins
 *.exe
