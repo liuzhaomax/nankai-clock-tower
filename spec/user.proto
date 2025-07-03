@@ -1,0 +1,27 @@
+syntax="proto3";
+
+option go_package="/pb";
+
+service UserService {
+  rpc GetUserByUserID(UserIDReq) returns (UserRes);
+}
+
+message UserIDReq {
+  string userID=1;
+}
+
+message Status {
+  int32 code = 1;
+  string desc = 2;
+}
+
+message UserResData {
+  int32 id=1;
+  string userID=2;
+  string mobile=3;
+}
+
+message UserRes {
+  Status status = 1;
+  UserResData data = 2;
+}

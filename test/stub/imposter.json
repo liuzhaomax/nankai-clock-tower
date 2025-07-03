@@ -1,0 +1,33 @@
+{
+  "port": 4545,
+  "protocol": "http",
+  "stubs": [
+    {
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "message": "Success",
+              "data": {
+                "id": 1,
+                "name": "Test"
+              }
+            }
+          }
+        }
+      ],
+      "predicates": [
+        {
+          "equals": {
+            "path": "/test",
+            "method": "GET"
+          }
+        }
+      ]
+    }
+  ]
+}

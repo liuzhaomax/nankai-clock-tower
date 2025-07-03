@@ -1,0 +1,92 @@
+app:
+  name: go-maxms
+  version: 0.1
+  domain: localhost:3001
+  enabled:
+    rsa: false # rsa和vault有关联关系
+    vault: false
+    signature: false # signature默认依赖于redis
+    header_params: false # check headers
+    random_port: false
+    service_discovery: false
+#  white_list:
+#    -
+#      name: sgw
+#      domain: http://localhost:9999
+
+lib:
+  log:
+    level: debug # trace << debug << info << warn << error << fatal << panic
+    format: text # text json
+    color: true
+    file_path: ./log
+    file_name: app.log
+  vault:
+    address: http://127.0.0.1:8200
+    interval: 15
+  gin:
+    run_mode: debug # debug test release
+    max_multipart_memory: 10 # MB
+  db:
+    type: mysql
+    debug: true
+    max_life_time: 8192
+    max_open_conns: 100000
+    max_idle_conns: 1000
+    name: go-maxms
+    params: charset=utf8mb4&parseTime=True&loc=Local
+    username: root
+    password: 123456
+    endpoint:
+      host: 127.0.0.1
+      port: 3306
+  redis:
+    endpoint:
+      host: 127.0.0.1
+      port: 6379
+  etcd:
+    dial_timeout: 5
+    dial_keep_alive_time: 5
+    dial_keep_alive_timeout: 5
+    endpoint:
+      host: 127.0.0.1
+      port: 2379
+  consul:
+    timeout: 3
+    interval: 30
+    deregister_after: 5
+    endpoint:
+      host: 127.0.0.1
+      port: 8500
+  jaeger:
+    endpoint:
+      host: 127.0.0.1
+      port: 6831
+  rocketmq:
+    timeout: 3
+    retry: 2
+    endpoint:
+      host: 192.168.1.14
+      port: 9876
+  mountebank:
+    protocol: http
+    mb:
+      endpoint:
+        host: 127.0.0.1
+        port: 2525
+
+server:
+  protocol: http
+  host: 192.168.1.14
+  port: 10001
+  base_url: /
+  read_timeout: 5 # seconds
+  write_timeout: 10
+  idle_timeout: 15
+  shutdown_timeout: 10
+
+downstreams:
+  - name: go-maxms-be
+    endpoint:
+      host: 172.21.240.1
+      port: 9801
