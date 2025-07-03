@@ -1,0 +1,92 @@
+app:
+  name: nct
+  version: 0.1
+  domain: liuzhaomax.cn
+  enabled:
+    rsa: false # rsa和vault有关联关系
+    vault: false
+    signature: false # signature默认依赖于redis
+    random_port: false
+    service_discovery: false
+#  white_list:
+#    -
+#      name: sgw
+#      domain: http://172.16.96.98:9999
+
+lib:
+  log:
+    level: debug # trace << debug << info << warn << error << fatal << panic
+    format: json # text json
+    color: false
+    file_path: ./log
+    file_name: app.log
+  vault:
+    address: https://vault.liuzhaomax.cn
+    interval: 15
+  gin:
+    run_mode: release # debug test release
+    max_multipart_memory: 10 # MB
+  db:
+    type: mysql
+    debug: true
+    max_life_time: 8192
+    max_open_conns: 100000
+    max_idle_conns: 1000
+    name: nct
+    params: charset=utf8mb4&parseTime=True&loc=Local
+    username: root
+    password: 123456
+    endpoint:
+      host: 172.16.96.98
+      port: 3306
+  redis:
+    endpoint:
+      host: 172.16.96.98
+      port: 6379
+  etcd:
+    dial_timeout: 5
+    dial_keep_alive_time: 5
+    dial_keep_alive_timeout: 5
+    endpoint:
+      host: 172.16.96.97
+      port: 2379
+  consul:
+    timeout: 3
+    interval: 30
+    deregister_after: 5
+    endpoint:
+      host: 172.16.96.97
+      port: 8500
+  jaeger:
+    endpoint:
+      host: 172.16.96.97
+      port: 6831
+  rocketmq:
+    timeout: 3
+    retry: 2
+    endpoint:
+      host: 106.15.94.179
+      port: 9876
+  mountebank:
+    protocol: http
+    server:
+      endpoint:
+        host: 106.15.94.179
+        port: 2525
+
+server:
+  protocol: https
+  host: 172.16.96.98
+  port: 10010
+  base_url: /
+  read_timeout: 5 # seconds
+  write_timeout: 10
+  idle_timeout: 15
+  shutdown_timeout: 10
+
+#downstreams:
+#  - name: go-maxms-be
+#    endpoint:
+#      host: 172.16.96.98
+#      port: 9801
+

@@ -1,5 +1,5 @@
 app:
-  name: go-maxms
+  name: nct
   version: 0.1
   domain: localhost:3001
   enabled:
@@ -33,7 +33,7 @@ lib:
     max_life_time: 8192
     max_open_conns: 100000
     max_idle_conns: 1000
-    name: go-maxms
+    name: nct
     params: charset=utf8mb4&parseTime=True&loc=Local
     username: root
     password: 123456
@@ -78,15 +78,15 @@ lib:
 server:
   protocol: http
   host: 192.168.1.14
-  port: 10001
+  port: 10010
   base_url: /
   read_timeout: 5 # seconds
   write_timeout: 10
   idle_timeout: 15
   shutdown_timeout: 10
 
-downstreams:
-  - name: go-maxms-be
-    endpoint:
-      host: 172.21.240.1
-      port: 9801
+#downstreams:
+#  - name: go-maxms-be
+#    endpoint:
+#      host: 172.21.240.1
+#      port: 9801

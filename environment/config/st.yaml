@@ -1,13 +1,13 @@
 app:
-  name: go-maxms
+  name: nct
   version: 0.1
   domain: liuzhaomax.cn
   enabled:
     rsa: false # rsa和vault有关联关系
-    vault: true
-    signature: true # signature默认依赖于redis
-    random_port: true
-    service_discovery: true
+    vault: false
+    signature: false # signature默认依赖于redis
+    random_port: false
+    service_discovery: false
 #  white_list:
 #    -
 #      name: sgw
@@ -24,7 +24,7 @@ lib:
     address: https://vault.liuzhaomax.cn
     interval: 15
   gin:
-    run_mode: debug # debug test release
+    run_mode: release # debug test release
     max_multipart_memory: 10 # MB
   db:
     type: mysql
@@ -32,7 +32,7 @@ lib:
     max_life_time: 8192
     max_open_conns: 100000
     max_idle_conns: 1000
-    name: go_maxms
+    name: nct
     params: charset=utf8mb4&parseTime=True&loc=Local
     username: root
     password: 123456
@@ -77,16 +77,16 @@ lib:
 server:
   protocol: http
   host: 172.16.96.98
-  port: 10001
+  port: 10010
   base_url: /
   read_timeout: 5 # seconds
   write_timeout: 10
   idle_timeout: 15
   shutdown_timeout: 10
 
-downstreams:
-  - name: go-maxms-be
-    endpoint:
-      host: 172.16.96.98
-      port: 9801
+#downstreams:
+#  - name: go-maxms-be
+#    endpoint:
+#      host: 172.16.96.98
+#      port: 9801
 
