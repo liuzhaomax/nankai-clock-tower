@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  nct:
+    image: nct
+    container_name: nct
+    privileged: true
+    restart: always
+    user: root
+    ports:
+      - '10010:10010' # http
+      - '10011:10011' # ws
+    volumes:
+      - /usr/bin/docker:/usr/bin/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/ssh:/var/ssh
+      - /root/logs/nct:/usr/src/app/log

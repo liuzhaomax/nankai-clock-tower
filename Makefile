@@ -14,6 +14,7 @@ spec:
 
 # 打包
 build:
+	go mod tidy
 	go build -o $(BUILT_FILE) main/main.go
 
 # 依赖注入
@@ -29,6 +30,8 @@ run:
 lint:
 	go mod tidy
 	go mod vendor
+	gofmt -w -s .
+	goimports -w .
 	golangci-lint run -v -c ./.golangci.yml ./...
 
 # 单元测试
