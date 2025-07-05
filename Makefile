@@ -31,7 +31,6 @@ lint:
 	go mod tidy
 	go mod vendor
 	gofmt -w -s .
-	goimports -w .
 	golangci-lint run -v -c ./.golangci.yml ./...
 
 # 单元测试

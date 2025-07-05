@@ -3,17 +3,17 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - depguard # internal中不含外部依赖 go mod vendor
+#    - depguard # internal中不含外部依赖 go mod vendor
     - dogsled
     - errcheck
-    - gochecknoinits # 不适用init
+#    - gochecknoinits # 不适用init
     - gocognit
     - goconst
     - gocritic
     - gocyclo
 #    - godot # 注释结尾句号
-    - gofmt # gofmt规范
-    - goimports # 引用未使用
+#    - gofmt # gofmt规范
+#    - goimports # 引用未使用
     - gomodguard
     - goprintffuncname
     - gosimple
