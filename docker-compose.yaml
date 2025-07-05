@@ -6,6 +6,8 @@ services:
     privileged: true
     restart: always
     user: root
+    environment:
+      - ENV=prod
     ports:
       - '10010:10010' # http
       - '10011:10011' # ws
