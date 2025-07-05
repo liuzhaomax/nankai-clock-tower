@@ -88,20 +88,3 @@ func (h *HandlerUser) DeleteLogin(c *gin.Context) (any, error) {
 	//     true)
 	return nil, nil
 }
-
-func (h *HandlerUser) GetUserByUserID(c *gin.Context) (*schema.UserRes, error) {
-	userID := c.Param(core.UserID)
-	user := &model.User{}
-	err := h.Tx.ExecTrans(c, func(ctx context.Context) error {
-		err := h.Model.QueryUserByUserID(c, userID, user)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	userRes := schema.MapUser2UserRes(user)
-	return userRes, nil
-}

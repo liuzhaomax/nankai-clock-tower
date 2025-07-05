@@ -19,10 +19,4 @@ func Register(root *gin.RouterGroup, handler *handler.HandlerUser, mw *middlewar
 	root.DELETE("/login", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.DeleteLogin(c)
 	}))
-	routerUser := root.Group("/users")
-	{
-		routerUser.GET("/:userID", core.WrapperRes(func(c *gin.Context) (any, error) {
-			return handler.GetUserByUserID(c)
-		}))
-	}
 }
