@@ -1,6 +1,5 @@
 # 南开钟楼
 
-
 1. 新建nct文件夹
 2. 拷贝bin，environment，Dockerfile，docker-compose
 3. cd到nct，构建镜像
