@@ -8,6 +8,9 @@ make build
 3. 拷贝bin，environment，Dockerfile，docker-compose 
 4. cd到nct，构建镜像
 ```shell
+# 如果直接构建失败，先尝试手动拉取镜像
+docker pull alpine:3.18 --platform linux/amd64
+# 构建镜像
 docker build -t nct .
 ```
 5. 创建容器
