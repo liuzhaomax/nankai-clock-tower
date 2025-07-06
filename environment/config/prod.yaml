@@ -79,7 +79,7 @@ lib:
         port: 2525
 
 server:
-  protocol: https
+  protocol: http
   host: 172.16.96.98
   port: 10010
   base_url: /
