@@ -1,7 +1,7 @@
 app:
   name: nct
   version: 0.1
-  domain: liuzhaomax.cn
+  domain: nct.liuzhaomax.cn
   enabled:
     rsa: true # rsa和vault有关联关系
     vault: false
@@ -19,7 +19,7 @@ app:
 
 lib:
   log:
-    level: debug # trace << debug << info << warn << error << fatal << panic
+    level: info # trace << debug << info << warn << error << fatal << panic
     format: json # text json
     color: false
     file_path: ./log
