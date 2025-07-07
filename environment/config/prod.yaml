@@ -1,7 +1,7 @@
 app:
   name: nct
   version: 0.1
-  domain: nct.liuzhaomax.cn
+  domain: blood.liuzhaomax.cn
   enabled:
     rsa: true # rsa和vault有关联关系
     vault: false
