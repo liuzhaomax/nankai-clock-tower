@@ -5,7 +5,7 @@
 make build
 ```
 2. 新建nct文件夹
-3. 拷贝bin，environment，Dockerfile，docker-compose 
+3. 拷贝bin, environment, Dockerfile, docker-compose, .env 
 4. cd到nct，构建镜像
 ```shell
 # 如果直接构建失败，先尝试手动拉取镜像
