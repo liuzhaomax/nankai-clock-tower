@@ -17,5 +17,6 @@ func (code ApiError) Error() string {
 }
 
 var (
-	InternalErr = Error(5001, "internal error")
+	InternalErr       = Error(1000, "internal error")
+	DBOperationFailed = Error(2000, "DB operation failed")
 )

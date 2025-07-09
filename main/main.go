@@ -10,6 +10,7 @@ func main() {
 	app.Launch(
 		context.Background(),
 		app.SetConfigFile(core.LoadEnv()),
+		app.SetSecret(core.LoadSecret()),
 		app.SetWWWDir("www"),
 	)
 }

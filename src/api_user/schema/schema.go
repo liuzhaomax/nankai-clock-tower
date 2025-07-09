@@ -6,39 +6,38 @@ import (
 )
 
 type UserRes struct {
-	UserID        string `json:"userId"`
-	Username      string `json:"username"`
-	Mobile        string `json:"mobile"`
-	Email         string `json:"email"`
-	EmailVerified bool   `json:"emailVerified"`
-	CreatedAt     string `json:"createdAt"`
-	UpdatedAt     string `json:"updatedAt"`
-	DeletedAt     string `json:"deletedAt"`
-}
-
-func MapUser2UserRes(user *model.User) *UserRes {
-	deletedAt := core.EmptyString
-	if user.DeletedAt.Valid {
-		deletedAt = user.DeletedAt.Time.String()
-	}
-	return &UserRes{
-		UserID:        user.UserID,
-		Username:      user.Username,
-		Mobile:        user.Mobile,
-		Email:         user.Email,
-		EmailVerified: user.EmailVerified,
-		CreatedAt:     user.CreatedAt.String(),
-		UpdatedAt:     user.UpdatedAt.String(),
-		DeletedAt:     deletedAt,
-	}
+	UserID    string `json:"userId"`
+	Mobile    string `json:"mobile"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+	DeletedAt string `json:"deletedAt"`
 }
 
 type LoginReq struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Code string `json:"code"`
+}
+
+type WechatAuthRes struct {
+	Openid     string `json:"openid"`
+	SessionKey string `json:"session_key"`
+	Unionid    string `json:"unionid,omitempty"`
+	ErrCode    int    `json:"errcode,omitempty"`
+	ErrMsg     string `json:"errmsg,omitempty"`
 }
 
 type TokenRes struct {
 	Token  string `json:"token"`
-	UserID string `json:"userId"`
+	UserId string `json:"userId"`
+}
+
+func MapWechatAuthRes2UserEntity(wechatAuthRes *WechatAuthRes, user *model.User) {
+	user.WechatOpenid = wechatAuthRes.Openid
+	user.WechatUnionid = wechatAuthRes.Unionid
+	user.WechatSessionKey = wechatAuthRes.SessionKey
+	if user.UserId == "" {
+		user.UserId = core.ShortUUID()
+	}
+	if user.WechatNickname == "" {
+		user.WechatNickname = "铁狼" + user.UserId[:6]
+	}
 }

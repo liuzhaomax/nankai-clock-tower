@@ -12,7 +12,6 @@ var InjectorSet = wire.NewSet(wire.Struct(new(Injector), "*"))
 
 type Injector struct {
 	InjectorHTTP
-	InjectorRPC
 }
 
 var InjectorHTTPSet = wire.NewSet(wire.Struct(new(InjectorHTTP), "*"))
@@ -22,12 +21,4 @@ type InjectorHTTP struct {
 	Handler *api.Handler
 	DB      *gorm.DB
 	Redis   *redis.Client
-}
-
-var InjectorRPCSet = wire.NewSet(wire.Struct(new(InjectorRPC), "*"))
-
-type InjectorRPC struct {
-	HandlerRPC *api.HandlerRPC
-	DB         *gorm.DB
-	Redis      *redis.Client
 }

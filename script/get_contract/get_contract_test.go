@@ -1,4 +1,4 @@
-package script
+package get_contract
 
 import (
 	"flag"

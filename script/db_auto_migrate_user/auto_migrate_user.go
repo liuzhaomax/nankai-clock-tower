@@ -37,27 +37,19 @@ func createAdmin(db *gorm.DB) {
 	cfg := core.GetConfig()
 	user := &model.User{}
 	result := db.First(user)
-	salt, encodedPwd := core.GetEncodedPwd("admin")
-	cfg.App.Salt = salt
 	// 将salt更新到vault
 	if cfg.App.Enabled.Vault {
 		cfg.PutSalt()
 	}
 	if result.RowsAffected == 0 {
-		user.UserID = core.ShortUUID()
-		user.Username = "admin"
-		user.Password = encodedPwd
-		user.Mobile = "+8613012345678"
-		user.Email = "admin@maxblog.cn"
+		user.UserId = core.ShortUUID()
+		user.WechatOpenid = "admin"
+		user.WechatUnionid = "admin"
+		user.WechatSessionKey = "admin"
+		user.WechatNickname = "liuzhaomax"
 		res := db.Create(&user)
 		if res.RowsAffected == 0 {
 			core.LogFailure(core.DBDenied, "admin创建失败", res.Error)
-			panic(res.Error)
-		}
-	} else {
-		res := db.Model(user).Where("user_id = ?", user.UserID).Update("password", encodedPwd)
-		if res.RowsAffected == 0 {
-			core.LogFailure(core.DBDenied, "admin更新失败", res.Error)
 			panic(res.Error)
 		}
 	}
@@ -65,5 +57,5 @@ func createAdmin(db *gorm.DB) {
 
 func DSN() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s",
-		"root", "123456", "127.0.0.1", "3306", "go_maxms", "charset=utf8mb4&parseTime=True&loc=Local")
+		"root", "123456", "127.0.0.1", "3306", "nct", "charset=utf8mb4&parseTime=True&loc=Local")
 }

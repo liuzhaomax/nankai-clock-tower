@@ -2,10 +2,13 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/liuzhaomax/go-maxms/internal/core"
+	"github.com/liuzhaomax/go-maxms/src/api_user/code"
 	"github.com/liuzhaomax/go-maxms/src/api_user/model"
 	"github.com/liuzhaomax/go-maxms/src/api_user/schema"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -19,44 +22,51 @@ func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
 	err := c.ShouldBind(loginReq)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.ParseIssue, "请求体无效", err))
-		return res, err
+		return nil, err
 	}
-	decryptedUsername, err := core.RSADecrypt(core.GetPrivateKey(), loginReq.Username)
-	loginReq.Username = decryptedUsername
+	decryptedCode, err := core.RSADecrypt(core.GetPrivateKey(), loginReq.Code)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.PermissionDenied, "请求体解码异常", err))
-		return res, err
+		return nil, err
 	}
-	decryptedPassword, err := core.RSADecrypt(core.GetPrivateKey(), loginReq.Password)
-	loginReq.Password = decryptedPassword
+	wechatAuthRes, err := getWechatOpenid(decryptedCode)
 	if err != nil {
-		h.Logger.Error(core.FormatError(core.PermissionDenied, "请求体解码异常", err))
-		return res, err
+		h.Logger.Error(core.FormatError(core.DownstreamDown, "请求微信code2session接口失败", err))
+		return nil, err
 	}
+	// 更新数据库
 	user := &model.User{}
 	err = h.Tx.ExecTrans(c, func(ctx context.Context) error {
-		err = h.Model.QueryUserByUsername(c, loginReq.Username, user)
-		if err != nil {
+		err = h.Model.QueryUserByWechatOpenid(ctx, wechatAuthRes.Openid, user)
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			h.Logger.Error(core.FormatError(core.DBDenied, "根据openid查找用户失败", err))
 			return err
+		}
+		schema.MapWechatAuthRes2UserEntity(wechatAuthRes, user)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = h.Model.CreateUser(ctx, user)
+			if err != nil {
+				h.Logger.Error(core.FormatError(core.DBDenied, "创建用户失败", err))
+				return err
+			}
+		} else {
+			err = h.Model.UpdateUser(ctx, user)
+			if err != nil {
+				h.Logger.Error(core.FormatError(core.DBDenied, "更新用户失败", err))
+				return err
+			}
 		}
 		return nil
 	})
 	if err != nil {
-		h.Logger.Error(core.FormatError(core.PermissionDenied, "登录失败", err))
-		return res, err
-	}
-	// loginReq.Password是从SGW经过RSA解码后得到密码
-	result := core.VerifyEncodedPwd(loginReq.Password, core.GetConfig().App.Salt, user.Password)
-	if !result {
-		h.Logger.Error(core.FormatError(core.PermissionDenied, "登录验证失败", err))
-		return res, err
+		return nil, code.DBOperationFailed
 	}
 	// 定义过期时长
 	maxAge := 60 * 60 * 24 * 7 // 一周
 	duration := time.Second * time.Duration(maxAge)
-	// 生成Bearer jwt，使用userID与ip签发
+	// 生成Bearer jwt，使用userID签发
 	j := core.NewJWT()
-	token, err := j.GenerateToken(user.UserID, core.GetClientIP(c), duration)
+	token, err := j.GenerateToken(user.UserId, duration)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.PermissionDenied, "Token生成失败", err))
 		return res, err
@@ -70,7 +80,7 @@ func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
 	}
 	// 拼接响应
 	res.Token = encryptedBearerToken
-	res.UserID = user.UserID
+	res.UserId = user.UserId
 	return res, nil
 }
 

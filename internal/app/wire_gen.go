@@ -14,14 +14,8 @@ import (
 	"github.com/liuzhaomax/go-maxms/internal/middleware/reverse_proxy"
 	"github.com/liuzhaomax/go-maxms/internal/middleware/tracing"
 	"github.com/liuzhaomax/go-maxms/internal/middleware/validator"
-	"github.com/liuzhaomax/go-maxms/internal/middleware_rpc"
-	auth2 "github.com/liuzhaomax/go-maxms/internal/middleware_rpc/auth"
-	tracing2 "github.com/liuzhaomax/go-maxms/internal/middleware_rpc/tracing"
-	validator2 "github.com/liuzhaomax/go-maxms/internal/middleware_rpc/validator"
 	"github.com/liuzhaomax/go-maxms/src/api_user/handler"
 	"github.com/liuzhaomax/go-maxms/src/api_user/model"
-	handler2 "github.com/liuzhaomax/go-maxms/src/api_user_rpc/handler"
-	model2 "github.com/liuzhaomax/go-maxms/src/api_user_rpc/model"
 )
 
 // Injectors from wire.go:
@@ -87,46 +81,8 @@ func InitInjector() (*Injector, func(), error) {
 		DB:      db,
 		Redis:   client,
 	}
-	authRPC := &auth2.AuthRPC{
-		Logger: logger,
-		Redis:  client,
-	}
-	validatorRPC := &validator2.ValidatorRPC{
-		Logger: logger,
-		Redis:  client,
-	}
-	tracingRPC := &tracing2.TracingRPC{
-		Logger:       logger,
-		TracerConfig: configuration,
-	}
-	middlewareRPC := &middleware_rpc.MiddlewareRPC{
-		AuthRPC:      authRPC,
-		ValidatorRPC: validatorRPC,
-		TracingRPC:   tracingRPC,
-	}
-	modelModelUser := &model2.ModelUser{
-		DB: db,
-	}
-	handlerHandlerUser := &handler2.HandlerUser{
-		Model:    modelModelUser,
-		Tx:       trans,
-		Redis:    client,
-		RocketMQ: rocketMQ,
-		Logger:   logger,
-	}
-	handlerRPC := &api.HandlerRPC{
-		PrometheusRegistry: registry,
-		MiddlewareRPC:      middlewareRPC,
-		HandlerRPC:         handlerHandlerUser,
-	}
-	injectorRPC := InjectorRPC{
-		HandlerRPC: handlerRPC,
-		DB:         db,
-		Redis:      client,
-	}
 	injector := &Injector{
 		InjectorHTTP: injectorHTTP,
-		InjectorRPC:  injectorRPC,
 	}
 	return injector, func() {
 		cleanup2()

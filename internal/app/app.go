@@ -3,10 +3,8 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/liuzhaomax/go-maxms/internal/api"
 	"github.com/liuzhaomax/go-maxms/internal/core"
 	"github.com/sirupsen/logrus"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,12 +16,19 @@ type Option func(*options)
 
 type options struct {
 	ConfigFile string
+	Secret     *core.Wechat
 	WWWDir     string
 }
 
 func SetConfigFile(configFile string) Option {
 	return func(opts *options) {
 		opts.ConfigFile = configFile
+	}
+}
+
+func SetSecret(secret *core.Wechat) Option {
+	return func(opts *options) {
+		opts.Secret = secret
 	}
 }
 
@@ -37,6 +42,9 @@ func InitConfig(opts *options) {
 	cfg := core.GetConfig()
 	cfg.LoadConfig(opts.ConfigFile)
 	cfg.App.Logger.WithField("path", opts.ConfigFile).Info(core.FormatInfo("配置文件加载成功"))
+	cfg.App.Wechat.AppId = opts.Secret.AppId
+	cfg.App.Wechat.AppSecret = opts.Secret.AppSecret
+	cfg.App.Logger.WithField("path", ".env").Info(core.FormatInfo("密钥文件加载成功"))
 	cfg.App.Logger.Info(core.FormatInfo("系统启动"))
 	if cfg.App.Enabled.ServiceDiscovery {
 		// register service
@@ -87,31 +95,6 @@ func InitHttpServer(ctx context.Context, handler http.Handler) func() {
 	}
 }
 
-func InitRpcServer(ctx context.Context, handlerRPC *api.HandlerRPC) func() {
-	cfg := core.GetConfig()
-	cfg.App.Logger.Info(core.FormatInfo("服务启动开始"))
-	addr := fmt.Sprintf("%s:%s", "0.0.0.0", cfg.Server.Port)
-	server := handlerRPC.Register()
-	go func() {
-		listen, err := net.Listen("tcp", addr)
-		if err != nil {
-			cfg.App.Logger.WithField(core.FAILURE, core.GetFuncName()).Fatal(core.FormatError(core.Unknown, "服务监听失败", err))
-		}
-		cfg.App.Logger.WithContext(ctx).Infof("Service %s is running at %s", cfg.App.Name, addr)
-		err = server.Serve(listen)
-		if err != nil {
-			cfg.App.Logger.WithField(core.FAILURE, core.GetFuncName()).Fatal(core.FormatError(core.Unknown, "服务启动失败", err))
-		}
-	}()
-	return func() {
-		cfg.App.Logger.Info(core.FormatInfo("服务关闭开始"))
-		_, cancel := context.WithTimeout(ctx, time.Second*time.Duration(cfg.Server.ShutdownTimeout))
-		defer cancel()
-		server.Stop()
-		cfg.App.Logger.Info(core.FormatInfo("服务关闭成功"))
-	}
-}
-
 func Init(ctx context.Context, optFuncs ...Option) func() {
 	// initialising options
 	opts := options{}
@@ -123,20 +106,12 @@ func Init(ctx context.Context, optFuncs ...Option) func() {
 	cfg := core.GetConfig()
 	// init injector
 	injector, cleanInjection, _ := InitInjector()
-	// init server by protocol
-	var cleanServer func()
-	switch cfg.Server.Protocol {
-	case "http":
-		// register apis
-		injector.Handler.RegisterStaticFS(injector.InjectorHTTP.Engine, opts.WWWDir) // static
-		injector.Handler.Register(injector.InjectorHTTP.Engine)                      // dynamic
-		// init server
-		cleanServer = InitHttpServer(ctx, injector.InjectorHTTP.Engine)
-	case "rpc":
-		cleanServer = InitRpcServer(ctx, injector.InjectorRPC.HandlerRPC)
-	default:
-		cleanServer = InitRpcServer(ctx, injector.InjectorRPC.HandlerRPC)
-	}
+	// init http server
+	// register apis
+	injector.Handler.RegisterStaticFS(injector.InjectorHTTP.Engine, opts.WWWDir) // static
+	injector.Handler.Register(injector.InjectorHTTP.Engine)                      // dynamic
+	// init server
+	cleanServer := InitHttpServer(ctx, injector.InjectorHTTP.Engine)
 	cfg.App.Logger.WithFields(logrus.Fields{
 		"app_name": cfg.App.Name,
 		"version":  cfg.App.Version,
