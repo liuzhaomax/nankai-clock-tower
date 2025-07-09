@@ -31,7 +31,7 @@ func getWechatOpenid(code string) (*schema.WechatAuthRes, error) {
 	}
 
 	if authResp.ErrCode != 0 {
-		return nil, fmt.Errorf("获取微信openid失败: %s: %s", authResp.ErrCode, authResp.ErrMsg)
+		return nil, fmt.Errorf("获取微信openid失败: %d: %s", authResp.ErrCode, authResp.ErrMsg)
 	}
 
 	return authResp, nil

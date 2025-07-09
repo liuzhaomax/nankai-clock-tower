@@ -96,8 +96,5 @@ func (auth *Auth) AbortWithError(c *gin.Context, args ...any) {
 // 验证规则：header中的userID与JWT中userID相同
 func (auth *Auth) CompareCombination(c *gin.Context, userID string) bool {
 	userIdInHeaders := c.Request.Header.Get(core.UserId)
-	if userIdInHeaders == userID {
-		return true
-	}
-	return false
+	return userIdInHeaders == userID
 }

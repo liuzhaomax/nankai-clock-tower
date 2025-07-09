@@ -44,8 +44,8 @@ func createAdmin(db *gorm.DB) {
 	if result.RowsAffected == 0 {
 		user.UserId = core.ShortUUID()
 		user.WechatOpenid = "admin"
-		user.WechatUnionid = "admin"
-		user.WechatSessionKey = "admin"
+		user.WechatUnionid = "admin1"
+		user.WechatSessionKey = "admin2"
 		user.WechatNickname = "liuzhaomax"
 		res := db.Create(&user)
 		if res.RowsAffected == 0 {
