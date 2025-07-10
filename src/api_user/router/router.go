@@ -16,13 +16,13 @@ func Register(root *gin.RouterGroup, handler *handler.HandlerUser, mw *middlewar
 	}))
 
 	root.Use(mw.Auth.ValidateToken())
+	root.DELETE("/login", core.WrapperRes(func(c *gin.Context) (any, error) {
+		return handler.DeleteLogin(c)
+	}))
 	root.PATCH("/user/avatar", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.PatchAvatar(c)
 	}))
 	root.PATCH("/user/nickName", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.PatchNickName(c)
-	}))
-	root.DELETE("/login", core.WrapperRes(func(c *gin.Context) (any, error) {
-		return handler.DeleteLogin(c)
 	}))
 }
