@@ -46,6 +46,38 @@ func (m *ModelUser) UpdateUser(ctx context.Context, user *User) error {
 	return nil
 }
 
+func (m *ModelUser) UpdateUserAvatar(ctx context.Context, user *User) error {
+	tx := ctx.Value(core.Trans{}).(*gorm.DB)
+	result := tx.WithContext(ctx).
+		Model(&User{}).
+		Where("user_id = ?", user.UserId).
+		Select("WechatAvatar").
+		Updates(user)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}
+
+func (m *ModelUser) UpdateUserNickName(ctx context.Context, user *User) error {
+	tx := ctx.Value(core.Trans{}).(*gorm.DB)
+	result := tx.WithContext(ctx).
+		Model(&User{}).
+		Where("user_id = ?", user.UserId).
+		Select("WechatNickname").
+		Updates(user)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}
+
 func (m *ModelUser) QueryUserByUserId(ctx context.Context, userID string, user *User) error {
 	tx := ctx.Value(core.Trans{}).(*gorm.DB)
 	result := tx.WithContext(ctx).Where("user_id = ?", userID).First(user)
