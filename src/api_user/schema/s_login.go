@@ -5,14 +5,6 @@ import (
 	"github.com/liuzhaomax/go-maxms/src/api_user/model"
 )
 
-type UserRes struct {
-	UserID    string `json:"userId"`
-	Mobile    string `json:"mobile"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
-	DeletedAt string `json:"deletedAt"`
-}
-
 type LoginReq struct {
 	Code string `json:"code"`
 }

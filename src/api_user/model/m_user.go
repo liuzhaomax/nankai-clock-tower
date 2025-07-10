@@ -78,9 +78,9 @@ func (m *ModelUser) UpdateUserNickName(ctx context.Context, user *User) error {
 	return nil
 }
 
-func (m *ModelUser) QueryUserByUserId(ctx context.Context, userID string, user *User) error {
+func (m *ModelUser) QueryUserByUserId(ctx context.Context, user *User) error {
 	tx := ctx.Value(core.Trans{}).(*gorm.DB)
-	result := tx.WithContext(ctx).Where("user_id = ?", userID).First(user)
+	result := tx.WithContext(ctx).Where("user_id = ?", user.UserId).First(user)
 	if result.Error != nil {
 		return result.Error
 	}

@@ -93,3 +93,29 @@ func (h *HandlerUser) PatchNickName(c *gin.Context) (any, error) {
 
 	return nil, nil
 }
+
+func (h *HandlerUser) GetUser(c *gin.Context) (*schema.UserRes, error) {
+	useId := c.Request.Header.Get(core.UserId)
+	user := &model.User{
+		UserId: useId,
+	}
+	err := h.Tx.ExecTrans(c, func(ctx context.Context) error {
+		err := h.Model.QueryUserByUserId(ctx, user)
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId获取用户信息失败", err))
+			return err
+		}
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId获取用户信息失败", err))
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, code.DBOperationFailed
+	}
+	// mapping
+	userRes := &schema.UserRes{}
+	schema.MapUserEntity2UserRes(user, userRes)
+	return userRes, nil
+}

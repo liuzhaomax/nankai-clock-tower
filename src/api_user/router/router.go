@@ -25,4 +25,7 @@ func Register(root *gin.RouterGroup, handler *handler.HandlerUser, mw *middlewar
 	root.PATCH("/user/nickName", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.PatchNickName(c)
 	}))
+	root.GET("/user/user", core.WrapperRes(func(c *gin.Context) (any, error) {
+		return handler.GetUser(c)
+	}))
 }
