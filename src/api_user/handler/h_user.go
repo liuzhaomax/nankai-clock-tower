@@ -9,8 +9,6 @@ import (
 	"github.com/liuzhaomax/go-maxms/src/api_user/model"
 	"github.com/liuzhaomax/go-maxms/src/api_user/schema"
 	"gorm.io/gorm"
-	"io"
-	"mime/multipart"
 )
 
 func (h *HandlerUser) PostAvatar(c *gin.Context) (any, error) {
@@ -20,21 +18,9 @@ func (h *HandlerUser) PostAvatar(c *gin.Context) (any, error) {
 		return nil, err
 	}
 
-	file, err := fileHeader.Open()
+	avatarUrl, err := getAvatarUrl(c, fileHeader)
 	if err != nil {
-		h.Logger.Error(core.FormatError(core.IOException, "头像文件打开失败", err))
-		return nil, err
-	}
-	defer func(file *multipart.File) {
-		err := (*file).Close()
-		if err != nil {
-			h.Logger.Error(core.FormatError(core.IOException, "头像文件关闭失败", err))
-		}
-	}(&file)
-
-	fileBytes, err := io.ReadAll(file)
-	if err != nil {
-		h.Logger.Error(core.FormatError(core.ParseIssue, "头像二进制流转[]byte失败", err))
+		h.Logger.Error(core.FormatError(core.IOException, "保存头像失败", err))
 		return nil, err
 	}
 
@@ -42,7 +28,7 @@ func (h *HandlerUser) PostAvatar(c *gin.Context) (any, error) {
 		useId := c.Request.Header.Get(core.UserId)
 		user := &model.User{
 			UserId:       useId,
-			WechatAvatar: fileBytes,
+			WechatAvatar: avatarUrl,
 		}
 		err = h.Model.UpdateUserAvatar(ctx, user)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {

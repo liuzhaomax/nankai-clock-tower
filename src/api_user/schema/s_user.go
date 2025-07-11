@@ -10,7 +10,7 @@ type NickNameReq struct {
 
 type UserRes struct {
 	UserID   string `json:"userId"`
-	Avatar   []byte `json:"avatar"`
+	Avatar   string `json:"avatar"`
 	NickName string `json:"nickName"`
 }
 

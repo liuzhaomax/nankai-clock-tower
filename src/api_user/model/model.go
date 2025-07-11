@@ -10,6 +10,6 @@ type User struct {
 	WechatOpenid     string `gorm:"index:idx_wechat_openid;unique;varchar(50);not null"`
 	WechatUnionid    string `gorm:"varchar(50);not null"`
 	WechatSessionKey string `gorm:"varchar(200);not null"`
-	WechatAvatar     []byte `gorm:"type:mediumblob"`
+	WechatAvatar     string `gorm:"varchar(200)"`
 	WechatNickname   string `gorm:"varchar(50)"`
 }

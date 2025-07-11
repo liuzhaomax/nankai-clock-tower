@@ -13,4 +13,5 @@ services:
       - '10011:10011' # ws
     volumes:
       - /root/ssh:/var/ssh
-      - /root/logs/nct:/usr/src/app/log
+      - /root/logs/nct:/app/log
+      - /root/static/nct:/app/www

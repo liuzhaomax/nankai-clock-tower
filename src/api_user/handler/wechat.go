@@ -3,10 +3,15 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/liuzhaomax/go-maxms/internal/core"
 	"github.com/liuzhaomax/go-maxms/src/api_user/schema"
 	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func getWechatOpenid(code string) (*schema.WechatAuthRes, error) {
@@ -35,4 +40,36 @@ func getWechatOpenid(code string) (*schema.WechatAuthRes, error) {
 	}
 
 	return authResp, nil
+}
+
+func getAvatarUrl(c *gin.Context, fileHeader *multipart.FileHeader) (string, error) {
+	userId := c.Request.Header.Get(core.UserId)
+	savePath := getAvatarSavePath(fileHeader.Filename, userId)
+	err := c.SaveUploadedFile(fileHeader, savePath)
+	if err != nil {
+		return core.EmptyString, core.FormatError(core.InternalServerError, "文件保存失败", err)
+	}
+
+	cfg := core.GetConfig()
+	url := fmt.Sprintf("%s://%s/%s", cfg.Server.Protocol, cfg.App.Domain, savePath)
+	return url, nil
+}
+
+func getAvatarSavePath(originalFilename string, userId string) string {
+	ext := filepath.Ext(originalFilename)
+	newFilename := fmt.Sprintf("%s%s", core.ShortUUID(), ext)
+
+	saveDir := filepath.Join(".", "www", "avatars", userId)
+	_, err := os.Stat(saveDir)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(saveDir, os.ModePerm)
+		if err != nil {
+			return ""
+		}
+	}
+
+	path := filepath.Join(saveDir, newFilename)
+	endpoint := strings.ReplaceAll(path, `\`, `/`)
+
+	return endpoint
 }
