@@ -19,8 +19,8 @@ func Register(root *gin.RouterGroup, handler *handler.HandlerUser, mw *middlewar
 	root.DELETE("/login", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.DeleteLogin(c)
 	}))
-	root.PATCH("/user/avatar", core.WrapperRes(func(c *gin.Context) (any, error) {
-		return handler.PatchAvatar(c)
+	root.POST("/user/avatar", core.WrapperRes(func(c *gin.Context) (any, error) {
+		return handler.PostAvatar(c)
 	}))
 	root.PATCH("/user/nickName", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.PatchNickName(c)

@@ -13,7 +13,7 @@ import (
 	"mime/multipart"
 )
 
-func (h *HandlerUser) PatchAvatar(c *gin.Context) (any, error) {
+func (h *HandlerUser) PostAvatar(c *gin.Context) (any, error) {
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.ParseIssue, "读取头像失败", err))
