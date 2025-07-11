@@ -8,6 +8,14 @@ type NickNameReq struct {
 	NickName string `json:"nickName"`
 }
 
+type NickNameRes struct {
+	NickName string `json:"nickName"`
+}
+
+type AvatarRes struct {
+	Avatar string `json:"avatar"`
+}
+
 type UserRes struct {
 	UserID   string `json:"userId"`
 	Avatar   string `json:"avatar"`

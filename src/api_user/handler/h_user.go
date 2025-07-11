@@ -45,7 +45,10 @@ func (h *HandlerUser) PostAvatar(c *gin.Context) (any, error) {
 		return nil, code.DBOperationFailed
 	}
 
-	return nil, nil
+	res := &schema.AvatarRes{
+		Avatar: avatarUrl,
+	}
+	return res, nil
 }
 
 func (h *HandlerUser) PatchNickName(c *gin.Context) (any, error) {
@@ -56,12 +59,12 @@ func (h *HandlerUser) PatchNickName(c *gin.Context) (any, error) {
 		return nil, err
 	}
 
+	useId := c.Request.Header.Get(core.UserId)
+	user := &model.User{
+		UserId:         useId,
+		WechatNickname: nickNameReq.NickName,
+	}
 	err = h.Tx.ExecTrans(c, func(ctx context.Context) error {
-		useId := c.Request.Header.Get(core.UserId)
-		user := &model.User{
-			UserId:         useId,
-			WechatNickname: nickNameReq.NickName,
-		}
 		err = h.Model.UpdateUserNickName(ctx, user)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId存入昵称失败", err))
@@ -77,7 +80,10 @@ func (h *HandlerUser) PatchNickName(c *gin.Context) (any, error) {
 		return nil, code.DBOperationFailed
 	}
 
-	return nil, nil
+	res := &schema.NickNameRes{
+		NickName: user.WechatNickname,
+	}
+	return res, nil
 }
 
 func (h *HandlerUser) GetUser(c *gin.Context) (*schema.UserRes, error) {
