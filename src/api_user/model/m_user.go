@@ -83,7 +83,11 @@ func (m *ModelUser) UpdateUserNickName(ctx context.Context, user *User) error {
 
 func (m *ModelUser) QueryUserByUserId(ctx context.Context, user *User) error {
 	tx := ctx.Value(core.Trans{}).(*gorm.DB)
-	result := tx.WithContext(ctx).Preload("Groups").Where("user_id = ?", user.UserId).First(user)
+	result := tx.WithContext(ctx).
+		Preload("Groups").
+		Preload("UserGroups").
+		Where("user_id = ?", user.UserId).
+		First(user)
 	if result.Error != nil {
 		return result.Error
 	}

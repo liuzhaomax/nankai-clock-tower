@@ -34,4 +34,10 @@ func Register(root *gin.RouterGroup, handler *handler.HandlerUser, mw *middlewar
 	root.PATCH("/group/join", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.PatchJoinGroup(c)
 	}))
+	// root.DELETE("/group", core.WrapperRes(func(c *gin.Context) (any, error) {
+	//     return handler.DeleteGroup(c)
+	// }))
+	// root.DELETE("/group/quit", core.WrapperRes(func(c *gin.Context) (any, error) {
+	//     return handler.DeleteQuitGroup(c)
+	// }))
 }

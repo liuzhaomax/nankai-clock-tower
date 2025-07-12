@@ -27,4 +27,19 @@ func MapUserEntity2UserRes(user *model.User, userRes *UserRes) {
 	userRes.UserID = user.UserId
 	userRes.Avatar = user.WechatAvatar
 	userRes.NickName = user.WechatNickname
+	userRes.Groups = &[]Group{}
+
+	for _, group := range user.Groups {
+		tmpGroup := Group{
+			Id:   group.ID,
+			Name: group.Name,
+		}
+		for _, userGroup := range user.UserGroups {
+			if group.ID == userGroup.GroupID {
+				tmpGroup.Score = userGroup.Score
+				break
+			}
+		}
+		*userRes.Groups = append(*userRes.Groups, tmpGroup)
+	}
 }
