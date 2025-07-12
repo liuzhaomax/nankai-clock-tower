@@ -15,8 +15,9 @@ type GroupReq struct {
 }
 
 type GroupRes struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
+	Id    uint   `json:"id"`
+	Name  string `json:"name"`
+	Score int    `json:"score"`
 }
 
 func MapUserGroup2UserGroupEntity(user *model.User, group *model.Group, userGroup *model.UserGroup) {

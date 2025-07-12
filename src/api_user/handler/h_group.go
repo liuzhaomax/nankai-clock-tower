@@ -77,8 +77,9 @@ func (h *HandlerUser) PostGroup(c *gin.Context) (any, error) {
 	}
 
 	res := &schema.GroupRes{
-		Id:   group.ID,
-		Name: group.Name,
+		Id:    group.ID,
+		Name:  group.Name,
+		Score: 0,
 	}
 	return res, nil
 }
@@ -139,8 +140,9 @@ func (h *HandlerUser) PatchJoinGroup(c *gin.Context) (any, error) {
 	}
 
 	res := &schema.GroupRes{
-		Id:   group.ID,
-		Name: group.Name,
+		Id:    group.ID,
+		Name:  group.Name,
+		Score: 0,
 	}
 	return res, nil
 }

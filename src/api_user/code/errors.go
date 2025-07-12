@@ -13,11 +13,12 @@ var (
 	// 内部服务器错误
 	InternalErr       = Error(1000, "内部错误")
 	DBFailed          = Error(1001, "数据库错误")
-	RequestParsingErr = Error(1100, "请求体解析错误")
-	DecodingErr       = Error(1101, "解密异常")
-	EncodingErr       = Error(1102, "加密异常")
-	TokenErr          = Error(1103, "Token签发错误")
-	FileParsingErr    = Error(1104, "文件解析错误")
+	PukGenErr         = Error(1100, "公钥生成失败")
+	RequestParsingErr = Error(1101, "请求体解析错误")
+	DecodingErr       = Error(1102, "解密异常")
+	EncodingErr       = Error(1103, "加密异常")
+	TokenErr          = Error(1104, "Token签发错误")
+	FileParsingErr    = Error(1105, "文件解析错误")
 	// 数据错误
 	UserExisted       = Error(2001, "用户已存在")
 	UserNotExisted    = Error(2002, "用户不存在")

@@ -13,7 +13,11 @@ import (
 )
 
 func (h *HandlerUser) GetPuk(c *gin.Context) (string, error) {
-	return core.GetConfig().App.PublicKeyStr, nil
+	puk := core.GetConfig().App.PublicKeyStr
+	if puk == "" {
+		return "", code.PukGenErr
+	}
+	return puk, nil
 }
 
 func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
@@ -90,19 +94,4 @@ func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
 	res.Token = encryptedBearerToken
 	res.UserId = user.UserId
 	return res, nil
-}
-
-func (h *HandlerUser) DeleteLogin(c *gin.Context) (any, error) {
-	// maxAge := int(time.Millisecond)
-	// domain := core.GetConfig().App.Domain
-	// c.SetSameSite(http.SameSiteNoneMode)
-	// c.SetCookie(
-	//     core.UserID,
-	//     core.EmptyString,
-	//     maxAge,
-	//     "/",
-	//     domain,
-	//     true,
-	//     true)
-	return nil, nil
 }

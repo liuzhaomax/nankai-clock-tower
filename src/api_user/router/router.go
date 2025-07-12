@@ -16,9 +16,6 @@ func Register(root *gin.RouterGroup, handler *handler.HandlerUser, mw *middlewar
 	}))
 
 	root.Use(mw.Auth.ValidateToken())
-	root.DELETE("/login", core.WrapperRes(func(c *gin.Context) (any, error) {
-		return handler.DeleteLogin(c)
-	}))
 	root.POST("/user/avatar", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.PostAvatar(c)
 	}))
