@@ -17,9 +17,10 @@ type AvatarRes struct {
 }
 
 type UserRes struct {
-	UserID   string `json:"userId"`
-	Avatar   string `json:"avatar"`
-	NickName string `json:"nickName"`
+	UserID   string   `json:"userId"`
+	Avatar   string   `json:"avatar"`
+	NickName string   `json:"nickName"`
+	Groups   *[]Group `json:"groups"`
 }
 
 func MapUserEntity2UserRes(user *model.User, userRes *UserRes) {

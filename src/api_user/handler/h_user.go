@@ -15,13 +15,13 @@ func (h *HandlerUser) PostAvatar(c *gin.Context) (any, error) {
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.ParseIssue, "读取头像失败", err))
-		return nil, err
+		return nil, code.RequestParsingErr
 	}
 
 	avatarUrl, err := getAvatarUrl(c, fileHeader)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.IOException, "保存头像失败", err))
-		return nil, err
+		return nil, code.FileParsingErr
 	}
 
 	err = h.Tx.ExecTrans(c, func(ctx context.Context) error {
@@ -33,16 +33,16 @@ func (h *HandlerUser) PostAvatar(c *gin.Context) (any, error) {
 		err = h.Model.UpdateUserAvatar(ctx, user)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId存入头像失败", err))
-			return err
+			return code.DBFailed
 		}
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId存入头像失败", err))
-			return err
+			return code.UserUpdateFailed
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, code.DBOperationFailed
+		return nil, err
 	}
 
 	res := &schema.AvatarRes{
@@ -56,7 +56,7 @@ func (h *HandlerUser) PatchNickName(c *gin.Context) (any, error) {
 	err := c.ShouldBind(nickNameReq)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.ParseIssue, "请求体无效", err))
-		return nil, err
+		return nil, code.RequestParsingErr
 	}
 
 	useId := c.Request.Header.Get(core.UserId)
@@ -68,16 +68,16 @@ func (h *HandlerUser) PatchNickName(c *gin.Context) (any, error) {
 		err = h.Model.UpdateUserNickName(ctx, user)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId存入昵称失败", err))
-			return err
+			return code.DBFailed
 		}
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId存入昵称失败", err))
-			return err
+			return code.UserUpdateFailed
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, code.DBOperationFailed
+		return nil, err
 	}
 
 	res := &schema.NickNameRes{
@@ -95,16 +95,16 @@ func (h *HandlerUser) GetUser(c *gin.Context) (*schema.UserRes, error) {
 		err := h.Model.QueryUserByUserId(ctx, user)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId获取用户信息失败", err))
-			return err
+			return code.DBFailed
 		}
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据userId获取用户信息失败", err))
-			return err
+			return code.UserNotExisted
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, code.DBOperationFailed
+		return nil, err
 	}
 	// mapping
 	userRes := &schema.UserRes{}

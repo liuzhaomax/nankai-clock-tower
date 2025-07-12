@@ -21,17 +21,17 @@ func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
 	err := c.ShouldBind(loginReq)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.ParseIssue, "请求体无效", err))
-		return nil, err
+		return nil, code.RequestParsingErr
 	}
 	decryptedCode, err := core.RSADecrypt(core.GetPrivateKey(), loginReq.Code)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.PermissionDenied, "请求体解码异常", err))
-		return nil, err
+		return nil, code.DecodingErr
 	}
 	wechatAuthRes, err := getWechatOpenid(decryptedCode)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.DownstreamDown, "请求微信code2session接口失败", err))
-		return nil, err
+		return nil, code.WechatFailed
 	}
 	// 更新数据库
 	user := &model.User{}
@@ -39,26 +39,34 @@ func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
 		err = h.Model.QueryUserByWechatOpenid(ctx, wechatAuthRes.Openid, user)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "根据openid查找用户失败", err))
-			return err
+			return code.DBFailed
 		}
 		schema.MapWechatAuthRes2UserEntity(wechatAuthRes, user)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = h.Model.CreateUser(ctx, user)
-			if err != nil {
+			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 				h.Logger.Error(core.FormatError(core.DBDenied, "创建用户失败", err))
-				return err
+				return code.DBFailed
+			}
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				h.Logger.Error(core.FormatError(core.DBDenied, "创建用户失败", err))
+				return code.UserExisted
 			}
 		} else {
 			err = h.Model.UpdateUser(ctx, user)
-			if err != nil {
+			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 				h.Logger.Error(core.FormatError(core.DBDenied, "更新用户失败", err))
-				return err
+				return code.DBFailed
+			}
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				h.Logger.Error(core.FormatError(core.DBDenied, "更新用户失败", err))
+				return code.UserUpdateFailed
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, code.DBOperationFailed
+		return nil, err
 	}
 	// 定义过期时长
 	maxAge := 60 * 60 * 24 * 7 // 一周
@@ -68,14 +76,14 @@ func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
 	token, err := j.GenerateToken(user.UserId, duration)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.PermissionDenied, "Token生成失败", err))
-		return nil, err
+		return nil, code.TokenErr
 	}
 	bearerToken := core.Bearer + token
 	// 对Bearer jwt 进行RSA加密
 	encryptedBearerToken, err := core.RSAEncrypt(core.GetPublicKey(), bearerToken)
 	if err != nil {
 		h.Logger.Error(core.FormatError(core.PermissionDenied, "Token加密失败", err))
-		return nil, err
+		return nil, code.EncodingErr
 	}
 	// 拼接响应
 	res := &schema.TokenRes{}

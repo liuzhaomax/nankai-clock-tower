@@ -25,7 +25,7 @@ func AutoMigrate() error {
 	if dbType == "mysql" {
 		db = db.Set("gorm:table_options", "ENGINE=InnoDB")
 	}
-	err = db.AutoMigrate(new(model.User))
+	err = db.AutoMigrate(new(model.User), new(model.Group), new(model.UserGroup))
 	if err != nil {
 		return err
 	}

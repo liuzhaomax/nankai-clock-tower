@@ -28,4 +28,10 @@ func Register(root *gin.RouterGroup, handler *handler.HandlerUser, mw *middlewar
 	root.GET("/user/user", core.WrapperRes(func(c *gin.Context) (any, error) {
 		return handler.GetUser(c)
 	}))
+	root.POST("/group", core.WrapperRes(func(c *gin.Context) (any, error) {
+		return handler.PostGroup(c)
+	}))
+	root.PATCH("/group/join", core.WrapperRes(func(c *gin.Context) (any, error) {
+		return handler.PatchJoinGroup(c)
+	}))
 }
