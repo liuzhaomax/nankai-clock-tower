@@ -44,11 +44,11 @@ func (h *HandlerUser) PostLogin(c *gin.Context) (*schema.TokenRes, error) {
 		schema.MapWechatAuthRes2UserEntity(wechatAuthRes, user)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = h.Model.CreateUser(ctx, user)
-			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
 				h.Logger.Error(core.FormatError(core.DBDenied, "创建用户失败", err))
 				return code.DBFailed
 			}
-			if errors.Is(err, gorm.ErrRecordNotFound) {
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
 				h.Logger.Error(core.FormatError(core.DBDenied, "创建用户失败", err))
 				return code.UserExisted
 			}

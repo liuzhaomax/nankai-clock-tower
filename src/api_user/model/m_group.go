@@ -8,12 +8,12 @@ import (
 
 func (m *ModelUser) CreateGroup(ctx context.Context, group *Group) error {
 	tx := ctx.Value(core.Trans{}).(*gorm.DB)
-	result := tx.WithContext(ctx).Create(group)
+	result := tx.WithContext(ctx).FirstOrCreate(group)
 	if result.Error != nil {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		return gorm.ErrDuplicatedKey
 	}
 	return nil
 }
@@ -24,20 +24,17 @@ func (m *ModelUser) QueryGroupByName(ctx context.Context, group *Group) error {
 	if result.Error != nil {
 		return result.Error
 	}
-	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
-	}
 	return nil
 }
 
 func (m *ModelUser) CreateUserGroup(ctx context.Context, userGroup *UserGroup) error {
 	tx := ctx.Value(core.Trans{}).(*gorm.DB)
-	result := tx.WithContext(ctx).Create(userGroup)
+	result := tx.WithContext(ctx).FirstOrCreate(userGroup)
 	if result.Error != nil {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		return gorm.ErrDuplicatedKey
 	}
 	return nil
 }
@@ -63,9 +60,6 @@ func (m *ModelUser) QueryGroupWithUsersByName(ctx context.Context, group *Group)
 		First(group)
 	if result.Error != nil {
 		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
 	}
 	return nil
 }

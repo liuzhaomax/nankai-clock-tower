@@ -30,11 +30,11 @@ func (h *HandlerUser) PostGroup(c *gin.Context) (any, error) {
 	err = h.Tx.ExecTrans(c, func(ctx context.Context) error {
 		// 创建group
 		err = h.Model.CreateGroup(ctx, group)
-		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "创建群组失败", err))
 			return code.DBFailed
 		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "创建群组失败", err))
 			return code.GroupExisted
 		}
@@ -62,11 +62,11 @@ func (h *HandlerUser) PostGroup(c *gin.Context) (any, error) {
 		schema.MapUserGroup2UserGroupEntity(user, group, userGroup)
 		// 创建关联信息userGroup
 		err = h.Model.CreateUserGroup(ctx, userGroup)
-		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "关联用户与群组失败", err))
 			return code.DBFailed
 		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "关联用户与群组失败", err))
 			return code.UserGroupExisted
 		}
@@ -124,11 +124,11 @@ func (h *HandlerUser) PatchJoinGroup(c *gin.Context) (any, error) {
 		schema.MapUserGroup2UserGroupEntity(user, group, userGroup)
 		// 创建关联信息userGroup
 		err = h.Model.CreateUserGroup(ctx, userGroup)
-		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "关联用户与群组失败", err))
 			return code.DBFailed
 		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			h.Logger.Error(core.FormatError(core.DBDenied, "关联用户与群组失败", err))
 			return code.UserGroupExisted
 		}

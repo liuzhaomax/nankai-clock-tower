@@ -1,8 +1,15 @@
 package model
 
 import (
+	"github.com/google/wire"
 	"gorm.io/gorm"
 )
+
+var ModelUserSet = wire.NewSet(wire.Struct(new(ModelUser), "*"))
+
+type ModelUser struct {
+	DB *gorm.DB
+}
 
 type User struct {
 	gorm.Model

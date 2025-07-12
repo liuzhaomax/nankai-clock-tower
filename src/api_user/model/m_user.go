@@ -2,16 +2,9 @@ package model
 
 import (
 	"context"
-	"github.com/google/wire"
 	"github.com/liuzhaomax/go-maxms/internal/core"
 	"gorm.io/gorm"
 )
-
-var ModelUserSet = wire.NewSet(wire.Struct(new(ModelUser), "*"))
-
-type ModelUser struct {
-	DB *gorm.DB
-}
 
 func (m *ModelUser) QueryUserByWechatOpenid(ctx context.Context, openid string, user *User) error {
 	tx := ctx.Value(core.Trans{}).(*gorm.DB)
@@ -19,20 +12,17 @@ func (m *ModelUser) QueryUserByWechatOpenid(ctx context.Context, openid string, 
 	if result.Error != nil {
 		return result.Error
 	}
-	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
-	}
 	return nil
 }
 
 func (m *ModelUser) CreateUser(ctx context.Context, user *User) error {
 	tx := ctx.Value(core.Trans{}).(*gorm.DB)
-	result := tx.WithContext(ctx).Create(user)
+	result := tx.WithContext(ctx).FirstOrCreate(user)
 	if result.Error != nil {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		return gorm.ErrDuplicatedKey
 	}
 	return nil
 }
@@ -90,9 +80,6 @@ func (m *ModelUser) QueryUserByUserId(ctx context.Context, user *User) error {
 		First(user)
 	if result.Error != nil {
 		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
 	}
 	return nil
 }
